@@ -1,5 +1,6 @@
 // Copyright (c) 2026 Qore
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jeenith/core/profiles/profile_store.dart';
 
 void main() {
@@ -54,6 +55,47 @@ void main() {
       expect(p2.name, '赵六');
       expect(p2.hour, 12);
       expect(p2.year, 1985);
+    });
+  });
+
+  group('ProfileStore', () {
+    test('add 到空存储不崩溃（v3.1.1 曾因 const list 崩溃）', () async {
+      SharedPreferences.setMockInitialValues({});
+      final p = Profile(
+        id: 's1',
+        name: '测试',
+        year: 2000,
+        month: 1,
+        day: 1,
+        hour: null,
+        isMale: true,
+        createdAt: DateTime(2026, 7, 26),
+      );
+      await ProfileStore.add(p);
+      final list = await ProfileStore.load();
+      expect(list.length, 1);
+      expect(list.first.name, '测试');
+    });
+
+    test('update/remove 正常', () async {
+      SharedPreferences.setMockInitialValues({});
+      final p = Profile(
+        id: 's2',
+        name: '原',
+        year: 1990,
+        month: 6,
+        day: 6,
+        hour: 4,
+        isMale: true,
+        createdAt: DateTime(2026, 7, 26),
+      );
+      await ProfileStore.add(p);
+      await ProfileStore.update(p.copyWith(name: '改'));
+      var list = await ProfileStore.load();
+      expect(list.first.name, '改');
+      await ProfileStore.remove('s2');
+      list = await ProfileStore.load();
+      expect(list, isEmpty);
     });
   });
 }

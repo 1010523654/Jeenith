@@ -123,7 +123,7 @@ class JiekuaStore {
 
   /// 新建或更新会话（按 id 覆盖，最新在前）。
   static Future<void> upsert(JiekuaSession s) => _serialize(() async {
-        final list = await load();
+        final list = <JiekuaSession>[...await load()];
         var found = false;
         for (var i = 0; i < list.length; i++) {
           if (list[i].id == s.id) {
@@ -137,7 +137,7 @@ class JiekuaStore {
       });
 
   static Future<void> remove(String id) => _serialize(() async {
-        final list = await load();
+        final list = <JiekuaSession>[...await load()];
         list.removeWhere((e) => e.id == id);
         await _save(list);
       });

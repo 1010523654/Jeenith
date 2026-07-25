@@ -118,13 +118,13 @@ class ProfileStore {
   }
 
   static Future<void> add(Profile p) => _serialize(() async {
-        final list = await load();
+        final list = <Profile>[...await load()];
         list.insert(0, p);
         await _save(list);
       });
 
   static Future<void> update(Profile p) => _serialize(() async {
-        final list = await load();
+        final list = <Profile>[...await load()];
         for (var i = 0; i < list.length; i++) {
           if (list[i].id == p.id) {
             list[i] = p;
@@ -135,7 +135,7 @@ class ProfileStore {
       });
 
   static Future<void> remove(String id) => _serialize(() async {
-        final list = await load();
+        final list = <Profile>[...await load()];
         list.removeWhere((e) => e.id == id);
         await _save(list);
       });
