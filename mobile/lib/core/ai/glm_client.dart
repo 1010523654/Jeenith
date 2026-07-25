@@ -3,31 +3,43 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-/// GLM-4-Flash 大模型客户端（v3.0.0 解卦用）。
+/// 一条对话消息（role: system / user / assistant）。
+class GlmMessage {
+  final String role;
+  final String content;
+  const GlmMessage(this.role, this.content);
+
+  Map<String, dynamic> toJson() => {'role': role, 'content': content};
+}
+
+/// GLM-4-Flash 大模型客户端（v3.0.0 解卦；v3.1.0 加多轮对话）。
 ///
-/// 智谱 AI openai 兼容接口，免费模型 `glm-4-flash`。key 由用户在设置页填入，
-/// 不硬编码。
+/// 智谱 AI openai 兼容接口，免费模型 `glm-4-flash`。key 由用户在设置页填入。
 class GlmClient {
   static const _endpoint =
       'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 
-  /// 解读卦象：用户问题 + 卦象文本 → 中文解读与建议。
-  ///
-  /// [apiKey] 智谱 API key；[question] 用户问题；[hexuanText] 卦象/卜算结果文本。
-  /// 失败抛异常（网络 / 鉴权 / 解析），由调用方处理。
-  static Future<String> interpret({
-    required String question,
-    required String hexuanText,
+  /// 默认系统提示：解卦师人格。
+  static const defaultSystemPrompt =
+      '你是一位精通中国传统卜算（周易、紫微斗数、八字、梅花易数等）的解卦师。'
+      '用户会提供卦象或卜算结果，以及想问的问题。'
+      '请结合卦象做详细、全面的解读，并给出可行、正面的建议。'
+      '可使用 Markdown 分点、加粗、标题等排版，语言自然，使用中文；不要编造卦象中没有的事实。'
+      '用户可能连续追问，请结合此前对话上下文回答。';
+
+  /// 多轮对话：[messages] 为 user/assistant 历史对话（不含 system，内部自动前置系统提示）。
+  static Future<String> chat({
+    required List<GlmMessage> messages,
     required String apiKey,
+    String? systemPrompt,
   }) async {
     if (apiKey.trim().isEmpty) {
       throw Exception('未配置 GLM API key，请在设置页填写');
     }
-    const systemPrompt = '你是一位精通中国传统卜算（周易、紫微斗数、八字、梅花易数等）的解卦师。'
-        '用户会提供一个卦象或卜算结果的详细文本，以及想问的问题。'
-        '请结合卦象本身做详细、全面的解读，并给出可行、正面的建议。'
-        '分点清晰、语言自然，使用中文回答；不要编造卦象中没有的事实。';
-    final userPrompt = '我想问：$question\n\n卦象 / 卜算结果：\n$hexuanText';
+    final all = <Map<String, dynamic>>[
+      GlmMessage('system', systemPrompt ?? defaultSystemPrompt).toJson(),
+      ...messages.map((m) => m.toJson()),
+    ];
 
     final resp = await http
         .post(
@@ -38,10 +50,7 @@ class GlmClient {
           },
           body: jsonEncode({
             'model': 'glm-4-flash',
-            'messages': [
-              {'role': 'system', 'content': systemPrompt},
-              {'role': 'user', 'content': userPrompt},
-            ],
+            'messages': all,
             'stream': false,
             'temperature': 0.7,
           }),
@@ -59,4 +68,17 @@ class GlmClient {
     final msg = (choices[0] as Map<String, dynamic>)['message'];
     return msg['content'] as String;
   }
+
+  /// 单次解读（便捷，内部走 [chat]）。保留向后兼容。
+  static Future<String> interpret({
+    required String question,
+    required String hexuanText,
+    required String apiKey,
+  }) =>
+      chat(
+        apiKey: apiKey,
+        messages: [
+          GlmMessage('user', '我想问：$question\n\n卦象 / 卜算结果：\n$hexuanText')
+        ],
+      );
 }

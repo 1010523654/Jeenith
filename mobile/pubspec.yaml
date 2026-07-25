@@ -44,6 +44,7 @@ dependencies:
   share_plus: ^10.0.0  # 系统分享（截图/导出文件）
   path_provider: ^2.1.0  # 临时文件路径（截图/导出文件）
   sensors_plus: ^6.0.0  # 磁力计（风水罗盘方位角计算）
+  flutter_markdown: ^0.7.7+1
 
 dev_dependencies:
   flutter_test:
