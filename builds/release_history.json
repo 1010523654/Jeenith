@@ -1636,6 +1636,46 @@
       "commit": "2739ea5039740aef5c36b727bbb20ffba565dc60",
       "publishedAt": "2026-07-26T03:45:00+08:00",
       "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.1.0",
+      "status": "published",
+      "isLatest": false
+    },
+    {
+      "platform": "GitHub",
+      "repo": "HeYS-Snowe/Jeenith",
+      "tag": "v3.1.1",
+      "target": "main",
+      "title": "v3.1.1 — 档案 CRUD 崩溃修复 + 档案/解卦视觉重做（去原生 Material）",
+      "label": "Latest",
+      "isLatest": true,
+      "isPreRelease": false,
+      "notesFile": "builds/release_notes/release_notes_v3.1.1.md",
+      "notesFormat": "markdown",
+      "assets": [
+        {
+          "name": "Jeenith_3.1.1_release_20260726_01.apk",
+          "platform": "android-arm64,android-arm,android-x64",
+          "size": 63784626,
+          "sizeFormatted": "60.83 MB",
+          "sha256": "7B59B0BDEC5E4B7B05319FE7E5F7E73A4287873BE1697B99CF2612416A096CC1",
+          "localPath": "builds/android/Jeenith_3.1.1_release_20260726_01.apk",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.1/Jeenith_3.1.1_release_20260726_01.apk"
+        },
+        {
+          "name": "Jeenith_3.1.1_release_20260726_01_windows_x64.zip",
+          "platform": "windows-x64",
+          "size": 16784050,
+          "sizeFormatted": "16.00 MB",
+          "sha256": "2E974515B910264B0FB4BD8B7C9D46E0BCB1335B7852F4C283C7D8D0F5979931",
+          "localPath": "builds/windows/Jeenith_3.1.1_release_20260726_01_windows_x64.zip",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.1/Jeenith_3.1.1_release_20260726_01_windows_x64.zip"
+        }
+      ],
+      "versionInPubspec": "3.1.1+50",
+      "buildStatus": "release",
+      "builtAt": "2026-07-26T03:47:29",
+      "commit": "10f5732c721f2f5a67b2012c0c99b86e9ac87b0f",
+      "publishedAt": "2026-07-26T03:55:00+08:00",
+      "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.1.1",
       "status": "published"
     }
   ]
