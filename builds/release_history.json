@@ -1556,6 +1556,46 @@
       "commit": "32eb559299901925669fdc7b991e80b3a3aaa1ae",
       "publishedAt": "2026-07-24T18:35:00+08:00",
       "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v2.12.0",
+      "status": "published",
+      "isLatest": false
+    },
+    {
+      "platform": "GitHub",
+      "repo": "HeYS-Snowe/Jeenith",
+      "tag": "v3.0.0",
+      "target": "main",
+      "title": "v3.0.0 — 底部三栏导航 + 档案 + 解卦(AI) + 入场仪式补全",
+      "label": "Latest",
+      "isLatest": true,
+      "isPreRelease": false,
+      "notesFile": "builds/release_notes/release_notes_v3.0.0.md",
+      "notesFormat": "markdown",
+      "assets": [
+        {
+          "name": "Jeenith_3.0.0_release_20260726_01.apk",
+          "platform": "android-arm64,android-arm,android-x64",
+          "size": 62490154,
+          "sizeFormatted": "59.60 MB",
+          "sha256": "CA18D846FDB067BE8C8185A714D5B51334E543E6506B80A6BFDBBDEC73E1A28B",
+          "localPath": "builds/android/Jeenith_3.0.0_release_20260726_01.apk",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.0.0/Jeenith_3.0.0_release_20260726_01.apk"
+        },
+        {
+          "name": "Jeenith_3.0.0_release_20260726_01_windows_x64.zip",
+          "platform": "windows-x64",
+          "size": 16533681,
+          "sizeFormatted": "15.77 MB",
+          "sha256": "C5F6B86B76A29045CD3D80598D72FD424FC1A9FC85E5070F54D0C2EF1A445EED",
+          "localPath": "builds/windows/Jeenith_3.0.0_release_20260726_01_windows_x64.zip",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.0.0/Jeenith_3.0.0_release_20260726_01_windows_x64.zip"
+        }
+      ],
+      "versionInPubspec": "3.0.0+48",
+      "buildStatus": "release",
+      "builtAt": "2026-07-26T03:18:31",
+      "commit": "9339b6ddfd5e799d4313ef7e4bfec132b28b9a91",
+      "publishedAt": "2026-07-26T03:30:00+08:00",
+      "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.0.0",
       "status": "published"
     }
   ]

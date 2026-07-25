@@ -919,6 +919,23 @@
       "platform": "android",
       "timestamp": "2026-07-24T18:27:10",
       "configSource": "pubspec.yaml"
+    },
+    {
+      "version": "3.0.0",
+      "buildNumber": 48,
+      "status": "release",
+      "date": "20260726",
+      "sequence": 1,
+      "filename": "Jeenith_3.0.0_release_20260726_01.apk",
+      "originalName": "app-release.apk",
+      "filePath": "D:\\Code\\Project\\Qore\\Jeenith\\mobile\\..\\builds\\android\\Jeenith_3.0.0_release_20260726_01.apk",
+      "fileSize": 62490154,
+      "fileSizeHuman": "59.60 MB",
+      "sha256": "CA18D846FDB067BE8C8185A714D5B51334E543E6506B80A6BFDBBDEC73E1A28B",
+      "buildType": "apk",
+      "platform": "android",
+      "timestamp": "2026-07-26T03:18:31",
+      "configSource": "pubspec.yaml"
     }
   ]
 }
