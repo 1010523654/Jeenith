@@ -38,6 +38,7 @@ class ConfigNotifier extends AsyncNotifier<AppConfig> {
       animationsEnabled: prefs.getBool('animationsEnabled') ?? true,
       animationSettings: raw,
       themeMode: _parseThemeMode(prefs.getString('themeMode')),
+      glmApiKey: prefs.getString('glmApiKey') ?? '',
     );
   }
 
@@ -100,6 +101,14 @@ class ConfigNotifier extends AsyncNotifier<AppConfig> {
     state = AsyncData(current.copyWith(themeMode: v));
   }
 
+  /// 设置 GLM API key（v3.0.0 解卦用）。
+  Future<void> setGlmApiKey(String v) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('glmApiKey', v);
+    final current = await future;
+    state = AsyncData(current.copyWith(glmApiKey: v));
+  }
+
   /// 重置所有设置为默认值（v2.11.0：「还原初设」/「归零重始」用）。
   ///
   /// 移除 showDetails / useOnline / animationsEnabled / themeMode 及全部
@@ -111,6 +120,7 @@ class ConfigNotifier extends AsyncNotifier<AppConfig> {
     await prefs.remove('useOnline');
     await prefs.remove('animationsEnabled');
     await prefs.remove('themeMode');
+    await prefs.remove('glmApiKey');
     for (final key in prefs.getKeys().toList()) {
       if (key.startsWith(_kAnimPrefix)) await prefs.remove(key);
     }

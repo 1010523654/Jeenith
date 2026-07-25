@@ -220,6 +220,15 @@ class SettingsPage extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
+            // v3.0.0：AI 解卦分区（GLM API key）。
+            SectionTitle('◆ AI 解卦', color: c.goldBright),
+            const SizedBox(height: 4),
+            _card(
+              context,
+              children: const [_GlmKeyTile()],
+            ),
+            const SizedBox(height: 20),
+
             // v2.11.0：数据与重置分区。
             SectionTitle('◆ 数据与重置', color: c.goldBright),
             const SizedBox(height: 4),
@@ -543,5 +552,117 @@ class SettingsPage extends ConsumerWidget {
     await AppData.clearAllData();
     await ref.read(configProvider.notifier).resetSettings();
     RestartController.instance.restart();
+  }
+}
+
+/// GLM API key 输入条（v3.0.0 解卦用）。
+class _GlmKeyTile extends ConsumerStatefulWidget {
+  const _GlmKeyTile();
+
+  @override
+  ConsumerState<_GlmKeyTile> createState() => _GlmKeyTileState();
+}
+
+class _GlmKeyTileState extends ConsumerState<_GlmKeyTile> {
+  late final TextEditingController _ctrl;
+  bool _obscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = TextEditingController(
+      text: ref.read(configProvider).valueOrNull?.glmApiKey ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = AppClr.of(context);
+    final empty = _ctrl.text.trim().isEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+          child: Row(
+            children: [
+              Text('GLM API Key', style: TextStyle(color: c.textPrimary)),
+              const Spacer(),
+              Text(empty ? '未设置' : '已设置',
+                  style: TextStyle(
+                      color: empty ? c.textHint : c.goldBright,
+                      fontSize: 11)),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          child: Column(
+            children: [
+              TextField(
+                controller: _ctrl,
+                obscureText: _obscure,
+                style: TextStyle(color: c.textPrimary, fontSize: 13),
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: '粘贴智谱 API key',
+                  hintStyle: TextStyle(color: c.textHint, fontSize: 12),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                        _obscure ? Icons.visibility_off : Icons.visibility,
+                        size: 18,
+                        color: c.textSubtitle),
+                    onPressed: () => setState(() => _obscure = !_obscure),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: c.goldBorder)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide(color: c.goldBright, width: 1.2)),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                        '用于「解卦」页 AI 解读。智谱 GLM-4-Flash 免费，到 open.bigmodel.cn 申请。',
+                        style: TextStyle(color: c.textHint, fontSize: 10, height: 1.4)),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: empty
+                        ? null
+                        : () {
+                            ref
+                                .read(configProvider.notifier)
+                                .setGlmApiKey(_ctrl.text.trim());
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('GLM API key 已保存'),
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: Duration(seconds: 2)));
+                          },
+                    style: FilledButton.styleFrom(
+                        backgroundColor: c.gold,
+                        foregroundColor: Colors.black87),
+                    child: const Text('保存'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

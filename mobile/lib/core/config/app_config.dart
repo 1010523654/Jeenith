@@ -27,6 +27,7 @@ class AppConfig {
   /// 按术数分类的动画开关。外层 key = tech id；内层 key = [AnimationKind] 名。
   final Map<String, Map<String, bool>> animationSettings;
   final ThemeMode themeMode;               // 主题模式：system/light/dark
+  final String glmApiKey;                  // v3.0.0 GLM-4-Flash API key（解卦用）
 
   const AppConfig({
     required this.showDetails,
@@ -34,6 +35,7 @@ class AppConfig {
     this.animationsEnabled = true,
     this.animationSettings = const {},
     this.themeMode = ThemeMode.dark,
+    this.glmApiKey = '',
   });
 
   /// 默认配置：所有术的所有 kind 动画开关都为 true。
@@ -44,6 +46,7 @@ class AppConfig {
     animationsEnabled: true,
     animationSettings: {},
     themeMode: ThemeMode.dark,
+    glmApiKey: '',
   );
 
   /// 读取某术某类动画开关。未在 Map 中显式记录时默认 true（向前兼容）。
@@ -56,6 +59,7 @@ class AppConfig {
     bool? animationsEnabled,
     Map<String, Map<String, bool>>? animationSettings,
     ThemeMode? themeMode,
+    String? glmApiKey,
   }) =>
       AppConfig(
         showDetails: showDetails ?? this.showDetails,
@@ -63,5 +67,6 @@ class AppConfig {
         animationsEnabled: animationsEnabled ?? this.animationsEnabled,
         animationSettings: animationSettings ?? this.animationSettings,
         themeMode: themeMode ?? this.themeMode,
+        glmApiKey: glmApiKey ?? this.glmApiKey,
       );
 }

@@ -82,6 +82,8 @@ class _HomePageState extends ConsumerState<HomePage>
     'bazi',
     'name_test',
     'liuyao',
+    'chenggu',
+    'taiyi',
   };
 
   void _onTapTech(String id) {
@@ -254,7 +256,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   Expanded(
                     child: GridView.count(
                       crossAxisCount: 2,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 96),
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
                       childAspectRatio: 0.86,
@@ -328,21 +330,6 @@ class _HomePageState extends ConsumerState<HomePage>
                             },
                           ),
                       ],
-                    ),
-                  ),
-                  EntranceItem(
-                    animation: _entrance,
-                    interval: const Interval(0.78, 1.0),
-                    slide: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8, bottom: 16),
-                      child: Text(
-                        Branding.copyright,
-                        style: TextStyle(
-                          color: c.textHint,
-                          fontSize: 10,
-                        ),
-                      ),
                     ),
                   ),
                 ],
