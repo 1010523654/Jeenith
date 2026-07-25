@@ -1596,6 +1596,46 @@
       "commit": "9339b6ddfd5e799d4313ef7e4bfec132b28b9a91",
       "publishedAt": "2026-07-26T03:30:00+08:00",
       "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.0.0",
+      "status": "published",
+      "isLatest": false
+    },
+    {
+      "platform": "GitHub",
+      "repo": "HeYS-Snowe/Jeenith",
+      "tag": "v3.1.0",
+      "target": "main",
+      "title": "v3.1.0 — 解卦智能体（多轮对话 + Markdown + 本地历史 + 过渡动画）",
+      "label": "Latest",
+      "isLatest": true,
+      "isPreRelease": false,
+      "notesFile": "builds/release_notes/release_notes_v3.1.0.md",
+      "notesFormat": "markdown",
+      "assets": [
+        {
+          "name": "Jeenith_3.1.0_release_20260726_01.apk",
+          "platform": "android-arm64,android-arm,android-x64",
+          "size": 63784630,
+          "sizeFormatted": "60.83 MB",
+          "sha256": "52A0A7AA4F8F2A3209E374F21CB69DFE27BC6A5705DF1B9E9F2E0E8F6FB08176",
+          "localPath": "builds/android/Jeenith_3.1.0_release_20260726_01.apk",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.0/Jeenith_3.1.0_release_20260726_01.apk"
+        },
+        {
+          "name": "Jeenith_3.1.0_release_20260726_01_windows_x64.zip",
+          "platform": "windows-x64",
+          "size": 16781301,
+          "sizeFormatted": "16.00 MB",
+          "sha256": "3C033114F968267A3D648F3948B1158D089D0680B4359905D485E1E10C8E1EFF",
+          "localPath": "builds/windows/Jeenith_3.1.0_release_20260726_01_windows_x64.zip",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.0/Jeenith_3.1.0_release_20260726_01_windows_x64.zip"
+        }
+      ],
+      "versionInPubspec": "3.1.0+49",
+      "buildStatus": "release",
+      "builtAt": "2026-07-26T03:32:22",
+      "commit": "2739ea5039740aef5c36b727bbb20ffba565dc60",
+      "publishedAt": "2026-07-26T03:45:00+08:00",
+      "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.1.0",
       "status": "published"
     }
   ]
