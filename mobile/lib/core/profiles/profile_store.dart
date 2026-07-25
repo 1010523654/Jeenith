@@ -104,7 +104,7 @@ class ProfileStore {
           .map((j) => Profile.fromJson(j as Map<String, dynamic>))
           .toList();
     } catch (_) {
-      return const <Profile>[];
+      return <Profile>[];
     }
   }
 

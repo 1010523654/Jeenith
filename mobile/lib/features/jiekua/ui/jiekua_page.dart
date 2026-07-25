@@ -12,10 +12,12 @@ import '../../../core/config/config_providers.dart';
 import '../../../core/history/history_store.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/decorative_panel.dart';
+import '../../../shared/widgets/divination_loading_indicator.dart';
+import '../../../shared/widgets/themed_dialog.dart';
 
-/// 解卦页（v3.1.0）：多轮对话式 AI 解卦，Markdown 渲染，本地会话历史，过渡动画。
+/// 解卦页（v3.1.1 重做：主题化，去除原生 Material）。
 ///
-/// v3.0.0 单次解读；v3.1.0 升级为智能体式多轮对话（AI 记上下文，可连续追问）。
+/// v3.0.0 单次解读；v3.1.0 多轮对话 + MD + 本地历史；v3.1.1 视觉重做。
 class JiekuaPage extends ConsumerStatefulWidget {
   const JiekuaPage({super.key});
 
@@ -47,34 +49,27 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
     final list = await HistoryStore.load();
     if (!mounted) return;
     if (list.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('暂无历史卦象，先去卜算一卦吧'),
-          behavior: SnackBarBehavior.floating));
+      _toast('暂无历史卦象，先去卜算一卦吧');
       return;
     }
     final c = AppClr.of(context);
     final picked = await showDialog<HistoryEntry>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: c.card,
-        title: Text('选择卦象',
-            style: TextStyle(color: c.goldBright, fontWeight: FontWeight.bold)),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: list.length,
-            itemBuilder: (_, i) {
-              final e = list[i];
-              return ListTile(
-                title: Text('${e.techName} · ${e.summary}',
-                    style: TextStyle(color: c.textPrimary, fontSize: 13)),
-                subtitle: Text(e.time.toString().substring(0, 19),
-                    style: TextStyle(color: c.textMeta, fontSize: 11)),
-                onTap: () => Navigator.pop(ctx, e),
-              );
-            },
-          ),
+      builder: (_) => ThemedDialog(
+        title: '选择卦象',
+        actions: [
+          _dialogAction(c, '取消', c.textSubtitle, () => Navigator.pop(context)),
+        ],
+        child: Column(
+          children: [
+            for (final e in list)
+              _selectItem(
+                c,
+                title: '${e.techName} · ${e.summary}',
+                subtitle: e.time.toString().substring(0, 19),
+                onTap: () => Navigator.pop(context, e),
+              ),
+          ],
         ),
       ),
     );
@@ -99,7 +94,6 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
       _error = null;
       _input.clear();
     });
-    // 重建 AnimatedList 后重建 key，让历史气泡整批淡入
     WidgetsBinding.instance.addPostFrameCallback((_) {
       for (var i = 0; i < _bubbles.length; i++) {
         _listKey.currentState?.insertItem(i, duration: Duration.zero);
@@ -115,50 +109,47 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
     final gradeBad = c.resolve(AppColors.gradeBad, AppColorsLight.gradeBad);
     await showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: c.card,
-        title: Text('解卦历史',
-            style: TextStyle(color: c.goldBright, fontWeight: FontWeight.bold)),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: list.isEmpty
-              ? Text('暂无解卦历史', style: TextStyle(color: c.textHint))
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: list.length,
-                  itemBuilder: (_, i) {
-                    final s = list[i];
-                    return ListTile(
-                      title: Text('${s.techName} · ${s.summary}',
-                          style: TextStyle(
-                              color: c.textPrimary, fontSize: 13)),
-                      subtitle: Text(
+      builder: (_) => ThemedDialog(
+        title: '解卦历史',
+        actions: [
+          _dialogAction(c, '关闭', c.textSubtitle, () => Navigator.pop(context)),
+        ],
+        child: list.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                    child: Text('暂无解卦历史',
+                        style: TextStyle(color: c.textHint, fontSize: 13))),
+              )
+            : Column(
+                children: [
+                  for (final s in list)
+                    _selectItem(
+                      c,
+                      title: '${s.techName} · ${s.summary}',
+                      subtitle:
                           '${s.messages.length} 条对话 · ${s.updatedAt.toString().substring(0, 16)}',
-                          style: TextStyle(
-                              color: c.textMeta, fontSize: 11)),
                       onTap: () {
-                        Navigator.pop(ctx);
+                        Navigator.pop(context);
                         _loadSession(s);
                       },
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete_outline,
-                            color: gradeBad, size: 20),
-                        onPressed: () async {
+                      trailing: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () async {
                           await JiekuaStore.remove(s.id);
-                          if (!ctx.mounted) return;
-                          Navigator.pop(ctx);
+                          if (!mounted) return;
+                          Navigator.of(context).pop();
                           _showHistory();
                         },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Icon(Icons.delete_outline,
+                              color: gradeBad, size: 18),
+                        ),
                       ),
-                    );
-                  },
-                ),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('关闭', style: TextStyle(color: c.textSubtitle))),
-        ],
+                    ),
+                ],
+              ),
       ),
     );
   }
@@ -169,6 +160,11 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
     _scrollToBottom();
   }
 
+  void _toast(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating));
+  }
+
   void _scrollToBottom({bool jump = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollCtrl.hasClients) return;
@@ -176,8 +172,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
         _scrollCtrl.jumpTo(_scrollCtrl.position.maxScrollExtent);
       } else {
         _scrollCtrl.animateTo(_scrollCtrl.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 260),
-            curve: Curves.easeOut);
+            duration: const Duration(milliseconds: 260), curve: Curves.easeOut);
       }
     });
   }
@@ -258,16 +253,8 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.history, color: c.gold),
-            tooltip: '解卦历史',
-            onPressed: _showHistory,
-          ),
-          IconButton(
-            icon: Icon(Icons.add_comment_outlined, color: c.gold),
-            tooltip: '新会话',
-            onPressed: _newSession,
-          ),
+          _appBarAction(c, Icons.history, '解卦历史', _showHistory),
+          _appBarAction(c, Icons.add_comment_outlined, '新会话', _newSession),
         ],
       ),
       body: Column(
@@ -284,7 +271,74 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
     );
   }
 
-  /// 卦象来源条（过渡切换）。
+  /// AppBar 操作（GestureDetector + 金色，无 IconButton）。
+  Widget _appBarAction(AppClr c, IconData icon, String tip, VoidCallback onTap) =>
+      GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Tooltip(
+          message: tip,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Icon(icon, color: c.goldBright, size: 20),
+          ),
+        ),
+      );
+
+  /// 弹窗内选择项（替代 ListTile）。
+  Widget _selectItem(AppClr c,
+      {required String title,
+      required String subtitle,
+      required VoidCallback onTap,
+      Widget? trailing}) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: c.goldBorder.withValues(alpha: 0.4))),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: TextStyle(
+                          color: c.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 2),
+                  Text(subtitle,
+                      style: TextStyle(color: c.textMeta, fontSize: 11)),
+                ],
+              ),
+            ),
+            ?trailing,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _dialogAction(AppClr c, String label, Color color, VoidCallback onTap) =>
+      GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Text(label,
+              style: TextStyle(
+                  color: color,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2)),
+        ),
+      );
+
   Widget _hexuanBar(AppClr c) {
     final src = _session != null
         ? (_session!.techName, _session!.summary)
@@ -300,6 +354,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
               child: DecorativePanel(
                 padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: _pickHexuan,
                   child: Row(children: [
                     Icon(Icons.add_chart, color: c.gold, size: 20),
@@ -307,7 +362,8 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
                     Text('选择卦象开始解卦',
                         style: TextStyle(color: c.goldBright, fontSize: 13)),
                     const Spacer(),
-                    Icon(Icons.chevron_right, color: c.textSubtitle, size: 18),
+                    Icon(Icons.chevron_right,
+                        color: c.textSubtitle, size: 18),
                   ]),
                 ),
               ),
@@ -318,6 +374,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
               child: DecorativePanel(
                 padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: _session == null ? _pickHexuan : null,
                   child: Row(children: [
                     Icon(Icons.auto_awesome, color: c.goldBright, size: 18),
@@ -358,7 +415,6 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
     );
   }
 
-  /// 单条气泡：user 右金色 / assistant 左卡片 Markdown。
   Widget _bubble(AppClr c, JiekuaMessage m, Animation<double> anim) {
     final isUser = m.role == 'user';
     return SizeTransition(
@@ -372,10 +428,11 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
           opacity: anim,
           child: Align(
             alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
               margin: const EdgeInsets.symmetric(vertical: 5),
-              constraints:
-                  BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.82),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.82),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isUser
@@ -387,22 +444,29 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
                   bottomLeft: Radius.circular(isUser ? 14 : 4),
                   bottomRight: Radius.circular(isUser ? 4 : 14),
                 ),
-                border: Border.all(color: c.goldBorder),
+                border: Border.all(
+                    color: isUser ? c.gold : c.goldBorder,
+                    width: isUser ? 1.1 : 1),
               ),
               child: isUser
                   ? Text(m.content,
-                      style: TextStyle(color: c.textPrimary, fontSize: 13, height: 1.5))
+                      style:
+                          TextStyle(color: c.textPrimary, fontSize: 13, height: 1.5))
                   : MarkdownBody(
                       data: m.content,
                       styleSheet: MarkdownStyleSheet(
-                        p: TextStyle(color: c.textBody, fontSize: 13, height: 1.65),
+                        p: TextStyle(
+                            color: c.textBody, fontSize: 13, height: 1.65),
                         h2: TextStyle(
                             color: c.goldBright,
                             fontSize: 15,
                             fontWeight: FontWeight.bold),
                         h3: TextStyle(
-                            color: c.goldBright, fontSize: 14, fontWeight: FontWeight.bold),
-                        strong: TextStyle(color: c.goldBright, fontWeight: FontWeight.bold),
+                            color: c.goldBright,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                        strong: TextStyle(
+                            color: c.goldBright, fontWeight: FontWeight.bold),
                         listBullet: TextStyle(color: c.gold),
                         blockSpacing: 6,
                       ),
@@ -431,60 +495,68 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-                width: 14,
-                height: 14,
-                child: CircularProgressIndicator(
-                    strokeWidth: 2, color: c.gold)),
+            const SizedBox(
+                width: 16, height: 16, child: DivinationLoadingIndicator(size: 16)),
             const SizedBox(width: 8),
             Text('解读中…', style: TextStyle(color: c.textSubtitle, fontSize: 12)),
           ],
         ),
       );
 
-  Widget _inputBar(AppClr c) => Container(
-        margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-        padding: const EdgeInsets.fromLTRB(12, 6, 6, 6),
-        decoration: BoxDecoration(
-          color: c.card,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: c.goldBorder),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _input,
-                minLines: 1,
-                maxLines: 4,
-                style: TextStyle(color: c.textPrimary, fontSize: 13),
-                decoration: InputDecoration(
-                  isDense: true,
-                  hintText: '输入问题或追问…',
-                  hintStyle: TextStyle(color: c.textHint, fontSize: 13),
-                  border: InputBorder.none,
-                ),
-                onSubmitted: (_) => _send(),
+  Widget _inputBar(AppClr c) {
+    final cc = AppClr.of(context);
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+      padding: const EdgeInsets.fromLTRB(14, 6, 6, 6),
+      decoration: BoxDecoration(
+        color: cc.card,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: cc.goldBorder),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _input,
+              minLines: 1,
+              maxLines: 4,
+              style: TextStyle(color: cc.textPrimary, fontSize: 13),
+              cursorColor: cc.gold,
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: '输入问题或追问…',
+                hintStyle: TextStyle(color: cc.textHint, fontSize: 13),
+                border: InputBorder.none,
+              ),
+              onSubmitted: (_) => _send(),
+            ),
+          ),
+          const SizedBox(width: 6),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _loading ? null : _send,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _loading
+                    ? cc.gold.withValues(alpha: 0.18)
+                    : cc.gold.withValues(alpha: 0.28),
+                border: Border.all(
+                    color: _loading ? cc.goldBorder : cc.gold, width: 1.1),
+              ),
+              child: Icon(
+                _loading ? Icons.hourglass_top : Icons.send,
+                color: _loading ? cc.textHint : cc.goldBright,
+                size: 20,
               ),
             ),
-            const SizedBox(width: 6),
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              transitionBuilder: (child, anim) =>
-                  ScaleTransition(scale: anim, child: child),
-              child: IconButton(
-                key: ValueKey(_loading),
-                onPressed: _loading ? null : _send,
-                icon: Icon(_loading ? Icons.hourglass_top : Icons.send,
-                    color: _loading ? c.textHint : c.goldBright),
-                style: IconButton.styleFrom(
-                  backgroundColor: c.gold.withValues(alpha: 0.12),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _disclaimer(AppClr c) => Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 86),
@@ -519,9 +591,18 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
             Expanded(
                 child: Text('未配置 GLM API key，请到设置页「AI 解卦」填写。',
                     style: TextStyle(color: c.textBody, fontSize: 12))),
-            TextButton(
-                onPressed: () => context.go('/settings'),
-                child: Text('去设置', style: TextStyle(color: c.gold))),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => context.go('/settings'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text('去设置',
+                    style: TextStyle(
+                        color: c.gold,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ),
           ],
         ),
       );
