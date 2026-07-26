@@ -104,6 +104,7 @@ flutter build windows --release
 - v3.1.0 解卦智能体（多轮对话 + Markdown 渲染 + 本地会话历史 + 过渡动画）
 - v3.1.1 档案 CRUD 崩溃修复 + 档案/解卦视觉重做（ThemedDialog + 12 时辰 chip 网格 + 去原生 Material）
 - v3.1.2 档案/解卦存储 unmodifiable list 崩溃根治（spread 拷贝 + 回归测试）
+- v3.1.3 解卦/档案弹窗 pop 崩溃根治（go_router 环境用 rootNavigator: true）
 - 后续可考虑：深化全方位卜算（三术交叉印证/每术更详细/缺时辰降级/可视化融合）、择日黄历（第16术）、仪式动画浅色适配、紫微流年深化、解卦深化（当前卦直发/流式输出）、档案扩展、v3.x 新术数 / 数据云同步 / 国际化
 
 ## 六、规则
