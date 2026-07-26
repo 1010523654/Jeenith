@@ -1716,6 +1716,46 @@
       "commit": "488e27c0c524863245139bd3e4ea84da74d44154",
       "publishedAt": "2026-07-26T04:10:00+08:00",
       "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.1.2",
+      "status": "published",
+      "isLatest": false
+    },
+    {
+      "platform": "GitHub",
+      "repo": "HeYS-Snowe/Jeenith",
+      "tag": "v3.1.3",
+      "target": "main",
+      "title": "v3.1.3 — 解卦/档案弹窗 pop 崩溃根治（hotfix）",
+      "label": "Latest",
+      "isLatest": true,
+      "isPreRelease": false,
+      "notesFile": "builds/release_notes/release_notes_v3.1.3.md",
+      "notesFormat": "markdown",
+      "assets": [
+        {
+          "name": "Jeenith_3.1.3_release_20260726_01.apk",
+          "platform": "android-arm64,android-arm,android-x64",
+          "size": 63784626,
+          "sizeFormatted": "60.83 MB",
+          "sha256": "4EF246A2523E601FFD0C4D90870F1CEAD2FC8E187188543552E30CAF8A0FF48B",
+          "localPath": "builds/android/Jeenith_3.1.3_release_20260726_01.apk",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.3/Jeenith_3.1.3_release_20260726_01.apk"
+        },
+        {
+          "name": "Jeenith_3.1.3_release_20260726_01_windows_x64.zip",
+          "platform": "windows-x64",
+          "size": 16784057,
+          "sizeFormatted": "16.00 MB",
+          "sha256": "25890E760AF4F1386D32A584A8919778CA4127E3A5B73E775E0FEDF106B46078",
+          "localPath": "builds/windows/Jeenith_3.1.3_release_20260726_01_windows_x64.zip",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.3/Jeenith_3.1.3_release_20260726_01_windows_x64.zip"
+        }
+      ],
+      "versionInPubspec": "3.1.3+52",
+      "buildStatus": "release",
+      "builtAt": "2026-07-26T04:20:00",
+      "commit": "6aa4d1f15367a695370da6db9981ac4821a37d44",
+      "publishedAt": "2026-07-26T04:30:00+08:00",
+      "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.1.3",
       "status": "published"
     }
   ]
