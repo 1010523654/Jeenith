@@ -70,8 +70,8 @@ class _ProfilesPageState extends ConsumerState<ProfilesPage>
       builder: (_) => ThemedDialog(
         title: '删除档案',
         actions: [
-          _dialogAction('取消', c.textSubtitle, () => Navigator.of(context).pop(false)),
-          _dialogAction('删除', gradeBad, () => Navigator.of(context).pop(true), bold: true),
+          _dialogAction('取消', c.textSubtitle, () => Navigator.of(context, rootNavigator: true).pop(false)),
+          _dialogAction('删除', gradeBad, () => Navigator.of(context, rootNavigator: true).pop(true), bold: true),
         ],
         child: Text('确定删除「${p.name}」的档案？此操作不可撤销。',
             style: TextStyle(color: c.textBody, fontSize: 13, height: 1.6)),
@@ -372,7 +372,7 @@ class _ProfileEditDialogState extends ConsumerState<_ProfileEditDialog> {
       await ProfileStore.update(profile);
     }
     if (!mounted) return;
-    Navigator.pop(context, true);
+    Navigator.of(context, rootNavigator: true).pop(true);
   }
 
   @override
@@ -381,7 +381,7 @@ class _ProfileEditDialogState extends ConsumerState<_ProfileEditDialog> {
     return ThemedDialog(
       title: widget.profile == null ? '新建档案' : '编辑档案',
       actions: [
-        _dialogAction(c, '取消', c.textSubtitle, () => Navigator.pop(context, false)),
+        _dialogAction(c, '取消', c.textSubtitle, () => Navigator.of(context, rootNavigator: true).pop(false)),
         _dialogAction(c, '保存', c.goldBright, _save, bold: true),
       ],
       child: Column(

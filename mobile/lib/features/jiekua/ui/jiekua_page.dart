@@ -58,7 +58,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
       builder: (_) => ThemedDialog(
         title: '选择卦象',
         actions: [
-          _dialogAction(c, '取消', c.textSubtitle, () => Navigator.pop(context)),
+          _dialogAction(c, '取消', c.textSubtitle, () => Navigator.of(context, rootNavigator: true).pop()),
         ],
         child: Column(
           children: [
@@ -67,7 +67,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
                 c,
                 title: '${e.techName} · ${e.summary}',
                 subtitle: e.time.toString().substring(0, 19),
-                onTap: () => Navigator.pop(context, e),
+                onTap: () => Navigator.of(context, rootNavigator: true).pop(e),
               ),
           ],
         ),
@@ -112,7 +112,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
       builder: (_) => ThemedDialog(
         title: '解卦历史',
         actions: [
-          _dialogAction(c, '关闭', c.textSubtitle, () => Navigator.pop(context)),
+          _dialogAction(c, '关闭', c.textSubtitle, () => Navigator.of(context, rootNavigator: true).pop()),
         ],
         child: list.isEmpty
             ? Padding(
@@ -130,7 +130,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
                       subtitle:
                           '${s.messages.length} 条对话 · ${s.updatedAt.toString().substring(0, 16)}',
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.of(context, rootNavigator: true).pop();
                         _loadSession(s);
                       },
                       trailing: GestureDetector(
@@ -138,7 +138,7 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
                         onTap: () async {
                           await JiekuaStore.remove(s.id);
                           if (!mounted) return;
-                          Navigator.of(context).pop();
+                          Navigator.of(context, rootNavigator: true).pop();
                           _showHistory();
                         },
                         child: Padding(
