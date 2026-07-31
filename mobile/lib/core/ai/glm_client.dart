@@ -69,6 +69,63 @@ class GlmClient {
     return msg['content'] as String;
   }
 
+  /// 流式对话（SSE）：逐段 yield 内容片段，用于打字机式实时输出（v3.1.4）。
+  ///
+  /// 用 [http.Client.send] 拿到 [StreamedResponse]，按行解析 `data: {...}`，
+  /// 提取 `choices[0].delta.content` 增量。遇 `[DONE]` 结束。
+  static Stream<String> chatStream({
+    required List<GlmMessage> messages,
+    required String apiKey,
+    String? systemPrompt,
+  }) async* {
+    if (apiKey.trim().isEmpty) {
+      throw Exception('未配置 GLM API key，请在设置页填写');
+    }
+    final all = <Map<String, dynamic>>[
+      GlmMessage('system', systemPrompt ?? defaultSystemPrompt).toJson(),
+      ...messages.map((m) => m.toJson()),
+    ];
+    final req = http.Request('POST', Uri.parse(_endpoint))
+      ..headers.addAll({
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream',
+      })
+      ..body = jsonEncode({
+        'model': 'glm-4-flash',
+        'messages': all,
+        'stream': true,
+        'temperature': 0.7,
+      });
+    final client = http.Client();
+    try {
+      final resp = await client.send(req);
+      if (resp.statusCode != 200) {
+        final body = await resp.stream.bytesToString();
+        throw Exception('GLM 请求失败（${resp.statusCode}）：$body');
+      }
+      await for (final line in resp.stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())) {
+        if (!line.startsWith('data:')) continue;
+        final data = line.substring(5).trim();
+        if (data.isEmpty || data == '[DONE]') continue;
+        try {
+          final json = jsonDecode(data) as Map<String, dynamic>;
+          final choices = json['choices'] as List?;
+          if (choices == null || choices.isEmpty) continue;
+          final delta = (choices[0] as Map)['delta'] as Map?;
+          final content = delta?['content'];
+          if (content is String && content.isNotEmpty) yield content;
+        } catch (_) {
+          // 跳过无法解析的行
+        }
+      }
+    } finally {
+      client.close();
+    }
+  }
+
   /// 单次解读（便捷，内部走 [chat]）。保留向后兼容。
   static Future<String> interpret({
     required String question,

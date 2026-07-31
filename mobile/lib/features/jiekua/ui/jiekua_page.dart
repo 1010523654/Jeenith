@@ -207,6 +207,9 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
         JiekuaMessage(role: 'user', content: q, time: DateTime.now());
     _addBubble(userMsg);
     _input.clear();
+    // 先插入空 assistant 气泡，流式逐段填充（打字机效果）
+    final aTime = DateTime.now();
+    _addBubble(JiekuaMessage(role: 'assistant', content: '', time: aTime));
     setState(() {
       _loading = true;
       _error = null;
@@ -215,14 +218,25 @@ class _JiekuaPageState extends ConsumerState<JiekuaPage> {
     try {
       final customSystem =
           '${GlmClient.defaultSystemPrompt}\n\n用户提供的卦象 / 卜算结果：\n${_session!.hexuanText}';
-      final glmMsgs =
-          _bubbles.map((m) => GlmMessage(m.role, m.content)).toList();
-      final reply = await GlmClient.chat(
-          messages: glmMsgs, apiKey: key, systemPrompt: customSystem);
+      // GLM 上下文：历史 user/assistant + 当前 user（排除当前空 assistant 占位）
+      final glmMsgs = _bubbles
+          .where((m) => !(m.role == 'assistant' && m.content.isEmpty))
+          .map((m) => GlmMessage(m.role, m.content))
+          .toList();
+      final buffer = StringBuffer();
+      await for (final delta in GlmClient.chatStream(
+          messages: glmMsgs, apiKey: key, systemPrompt: customSystem)) {
+        buffer.write(delta);
+        if (!mounted) return;
+        setState(() {
+          _bubbles = List.of(_bubbles)
+            ..[_bubbles.length - 1] = JiekuaMessage(
+                role: 'assistant',
+                content: buffer.toString(),
+                time: aTime);
+        });
+      }
       if (!mounted) return;
-      final aMsg = JiekuaMessage(
-          role: 'assistant', content: reply, time: DateTime.now());
-      _addBubble(aMsg);
       final updated = _session!.copyWith(
           messages: List.of(_bubbles), updatedAt: DateTime.now());
       _session = updated;
