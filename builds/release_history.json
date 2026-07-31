@@ -1756,6 +1756,46 @@
       "commit": "6aa4d1f15367a695370da6db9981ac4821a37d44",
       "publishedAt": "2026-07-26T04:30:00+08:00",
       "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.1.3",
+      "status": "published",
+      "isLatest": false
+    },
+    {
+      "platform": "GitHub",
+      "repo": "HeYS-Snowe/Jeenith",
+      "tag": "v3.1.4",
+      "target": "main",
+      "title": "v3.1.4 — 解卦 AI 流式输出（打字机效果）",
+      "label": "Latest",
+      "isLatest": true,
+      "isPreRelease": false,
+      "notesFile": "builds/release_notes/release_notes_v3.1.4.md",
+      "notesFormat": "markdown",
+      "assets": [
+        {
+          "name": "Jeenith_3.1.4_release_20260731_01.apk",
+          "platform": "android-arm64,android-arm,android-x64",
+          "size": 63801010,
+          "sizeFormatted": "60.85 MB",
+          "sha256": "185AFD5BB5BB2B3948587E96AD9D2D7AE864179D95DECB0F9ED5177C8BDCE3CB",
+          "localPath": "builds/android/Jeenith_3.1.4_release_20260731_01.apk",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.4/Jeenith_3.1.4_release_20260731_01.apk"
+        },
+        {
+          "name": "Jeenith_3.1.4_release_20260731_01_windows_x64.zip",
+          "platform": "windows-x64",
+          "size": 16792709,
+          "sizeFormatted": "16.01 MB",
+          "sha256": "F639F64C26BA0F6B5DAD77C6FB8D0DC05435626FCEDA544F48E3EC8F741DD11E",
+          "localPath": "builds/windows/Jeenith_3.1.4_release_20260731_01_windows_x64.zip",
+          "downloadUrl": "https://github.com/HeYS-Snowe/Jeenith/releases/download/v3.1.4/Jeenith_3.1.4_release_20260731_01_windows_x64.zip"
+        }
+      ],
+      "versionInPubspec": "3.1.4+53",
+      "buildStatus": "release",
+      "builtAt": "2026-07-31T00:00:00",
+      "commit": "4e4261060c6f701ac795f53dca9e9aad2174b9b2",
+      "publishedAt": "2026-07-31T00:10:00+08:00",
+      "url": "https://github.com/HeYS-Snowe/Jeenith/releases/tag/v3.1.4",
       "status": "published"
     }
   ]
