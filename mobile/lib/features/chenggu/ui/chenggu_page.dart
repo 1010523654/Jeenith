@@ -9,6 +9,7 @@ import '../../../core/animation/reveal/reveal_animation.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/config/config_providers.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/calendar/birth_validate.dart';
 import '../../../core/history/history_store.dart';
 import '../../../core/history/history_providers.dart';
 import '../../../shared/widgets/decorative_panel.dart';
@@ -75,7 +76,12 @@ class _ChengguPageState extends ConsumerState<ChengguPage> {
     final m = int.tryParse(_month.text) ?? 0;
     final d = int.tryParse(_day.text) ?? 0;
     final h = int.tryParse(_hour.text) ?? -1;
-    if (y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31 || h < 0 || h > 23) return;
+    final berr = validateBirth(y, m, d, h);
+    if (berr != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(berr), behavior: SnackBarBehavior.floating));
+      return;
+    }
     setState(() => _r = divine(y, m, d, h));
     FocusScope.of(context).unfocus();
     unawaited(HistoryStore.add(HistoryEntry(
